@@ -28,7 +28,7 @@ const Ram = () => {
             </Container>
         </Fragment>
     ) : (
-        <Fragment className="mb-2">
+        <Fragment>
             <h1 className="text-center my-4">Оперативная память</h1>
             <Row className="ml-2">
             

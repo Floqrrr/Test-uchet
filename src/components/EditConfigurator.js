@@ -3,18 +3,15 @@ import {
   Form,
   Button,
   Container,
-  DropdownButton,
-  Dropdown,
   Col,
   Row,
   Card,
 } from "react-bootstrap";
 import { getData } from "./actions/actions";
 import { updateTodo, deleteTodo } from "./actions/sendTodo";
-import { Link } from "react-router-dom";
+
 
 const initialState = {
-    id: "",
   name: "",
   id_cpu: "",
   id_gpu: "",
@@ -46,11 +43,9 @@ const EditConfigurator = ({ history }) => {
     console.log(formData);
   };
 
-  const id1 = history.location.pathname.toString().slice(-1);
+  let { name, id_cpu, id_gpu, id_motherboard, id_hdd, id_power_sup, id_ram } = formData;
 
-  let { id, name, id_cpu, id_gpu, id_motherboard, id_hdd, id_power_sup, id_ram } = formData;
 
-  id = id1;
 
   console.log(history.location.pathname.toString().slice(-1));
 

@@ -3,15 +3,13 @@ import {
   Form,
   Button,
   Container,
-  DropdownButton,
-  Dropdown,
   Col,
   Row,
   Card,
 } from "react-bootstrap";
 import { getData } from "./actions/actions";
 import { sendTodo } from "./actions/sendTodo";
-import { Link } from "react-router-dom";
+
 
 const initialState = {
   name: "",

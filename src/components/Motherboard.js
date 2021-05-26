@@ -28,7 +28,7 @@ const Motherboard = () => {
             </Container>
         </Fragment>
     ) : (
-        <Fragment className="mb-2">
+        <Fragment>
             <h1 className="text-center my-4">Материнские платы</h1>
             <Row className="ml-2">
             

@@ -29,7 +29,7 @@ const Main = () => {
             </Container>
         </Fragment>
     ) : (
-        <Fragment className="mb-2">
+        <Fragment>
 
         <Carousel>
         <Carousel.Item>

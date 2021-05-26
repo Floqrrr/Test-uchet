@@ -1,4 +1,4 @@
-import { useState, useMemo, Fragment } from 'react'
+import { Fragment } from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import Cpu from './components/Cpu'
 import Gpu from './components/Gpu'

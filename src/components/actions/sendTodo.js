@@ -1,5 +1,4 @@
 import axios from "axios";
-import React from "react"
 const config = {
   headers: {
     "Content-type": "application/json",
