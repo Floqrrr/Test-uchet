@@ -1,22 +1,60 @@
-import {React} from "react";
-import {Navbar, Nav, NavDropdown} from "react-bootstrap";
+import {React, useEffect, useState} from "react";
+import {Navbar, Nav, Form, FormControl, Button} from "react-bootstrap";
+import { useHistory } from "react-router-dom";
+import {Link} from "react-router-dom"
+import { getData } from "./actions/actions";
 
 const NavBar = () => {
+    const history = useHistory();
+
+    const handleChange = (e) => {
+        setSearch({value: e.target.value});
+      }
+
+    const [Search, setSearch] = useState("");
+    const [Value, setValue] = useState();
+    const [dat, setdat] = useState(false);
+    const [data, setData] = useState();
+    let k = 0;
+
+    const ssearch = () => {
+        
+        data.products.map((item) => 
+        {
+            if(item.name == Search.value)
+            {
+                history.push(`/order/${Search.value}`);
+                k = 1;
+            }
+
+        })
+
+        if(k == 0) alert("Товар не найден")
+        console.log(data.products.map((item) => item.name == Search.value))
+    }
+
+    useEffect(() => {
+        getData().then((result) => setData(result));
+      }, [getData]);
+
+
     return(
     <>    
-        <Navbar  bg="dark" variant="dark">
-            <Navbar.Brand href="/">Conf_pc</Navbar.Brand>
+        <Navbar  bg="success" variant="dark">
+            <Navbar.Brand href="/">Главная</Navbar.Brand>
             <Nav className="mr-auto">
-            <Nav.Link href="/configurator">Собрать пк</Nav.Link>
-                <NavDropdown title="Комплектующие" id="collasible-nav-dropdown">
-                    <NavDropdown.Item href="/cpu">Процессоры</NavDropdown.Item>
-                    <NavDropdown.Item href="/gpu">Видеокарты</NavDropdown.Item>
-                    <NavDropdown.Item href="/motherboard">Материнские платы</NavDropdown.Item>
-                    <NavDropdown.Item href="/hdd">Жесткие диски</NavDropdown.Item>
-                    <NavDropdown.Item href="/ram">Оперативная память</NavDropdown.Item>
-                    <NavDropdown.Item href="/power">Блоки питания</NavDropdown.Item>
-            </NavDropdown>
+            <Nav.Link href="/addproduct">Добавить товар</Nav.Link>
+            <Nav.Link href="/addcategory">Изменить категории</Nav.Link>
+            <Nav.Link href="/addseller">Сотрудники</Nav.Link>
+            <Nav.Link href="/addmanufacturer">Поставщики</Nav.Link>
             </Nav>
+            <Form className="d-flex">
+                <FormControl
+
+                className="mr-2" type="text" name="count" placeholder="Поиск товара"  onChange={handleChange}
+                />
+                <Button className="d-flex" onClick={ssearch}>Поиск</Button>
+            </Form>            
         </Navbar>
     </>
     )    

@@ -1,6 +1,6 @@
 {
     "host": "localhost",
     "user": "root",
-    "password": "root",
-    "database": "conf_pc"
+    "password": "5500",
+    "database": "apteka"
 }

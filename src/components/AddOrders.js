@@ -1,14 +1,15 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Container, Row } from "react-bootstrap";
-import To_power from "./cards/To_power"
+import { Container, Row, Carousel } from "react-bootstrap";
+import To_orders from "./cards/To_orders"
 
 
-const Power = () => {
+const Main = () => {
+
     const [isLoaded, setIsLoaded] = useState(false);
     const [items, setItems] = useState([]);
 
     useEffect(() => {
-        fetch("/api/todo/power")
+        fetch("/api/todo/order")
         .then((res) => res.json())
         .then(
             (result) => {
@@ -29,15 +30,18 @@ const Power = () => {
         </Fragment>
     ) : (
         <Fragment>
-            <h1 className="text-center my-4">Блоки питания</h1>
+
+       
+
+            <h1 className="text-center my-4">Продажи</h1>
             <Row className="ml-2">
             
                 {items.map((el) => (
-                    <To_power key={el.id} todo={el} />
+                    <To_orders key={el.id} todo={el} />
                 ))}
             </Row>
         </Fragment>
     );
 };
 
-export default Power;
+export default Main;

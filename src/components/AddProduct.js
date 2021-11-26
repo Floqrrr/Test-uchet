@@ -1,19 +1,21 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Row, Col, Form, Button } from "react-bootstrap";
 import { getData } from "./actions/actions";
-import { updateProduct, SendTodoDeleteProduct } from "./actions/sendTodo";
+import { SendTodoAddproduct } from "./actions/sendTodo";
 
 const initialState = {
-  name: "",
-  count: "",
-  price: "",
-  manufactured_time: "",
-  expiration_date: "",
-  manufacturer_id: 1,
-  categories_id: 1
+    name: "",
+    count: "",
+    price: "",
+    manufactured_time: "",
+    expiration_date: "",
+    manufacturer_id: 1,
+    categories_id: 1
+
+
 };
 
-const EditConfigurator = ({ history }) => {
+const AddProduct = ({ history }) => {
 
     const [formData, setFormData] = useState(initialState);
     const [data, setData] = useState();
@@ -23,22 +25,12 @@ const EditConfigurator = ({ history }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const Ondel = (e)=> {
-    e.preventDefault();
-    SendTodoDeleteProduct(history.location.pathname.toString().slice(-1))
-    history.push("/")
-  }
-
   const OnSubmit = (e) => {
     e.preventDefault();
 
     if(formData.name === "")
     {
-      alert("Введие название товара")
-    }
-    else if(/^(0|-?[1-9]\d{0,5})$/.test(formData.name))
-    {
-      alert("Введие правильное название товара")
+      alert("Введите название товара")
     }
     else
     {
@@ -66,21 +58,17 @@ const EditConfigurator = ({ history }) => {
                     }
                     else
                     {
-                        updateProduct(formData, data.products.find((item) => item.name == history.location.pathname.toString().slice(6)).id);
+                        SendTodoAddproduct(formData);
                         history.push('/')
                     }
                 }
             }
         }
     }
-
-    
-    //console.log(data.products.find((item) => item.name))
-    //console.log(data)
-    //history.push("/")
+    //console.log(formData);
   };
 
-  const { id, name, count, price, manufactured_time, expiration_date, manufacturer_id, categories_id } = formData;
+  const { name, count, price, manufactured_time, expiration_date, manufacturer_id, categories_id } = formData;
 
   useEffect(() => {
     getData().then((result) => setData(result));
@@ -90,7 +78,7 @@ const EditConfigurator = ({ history }) => {
     <h1>loading</h1>
   ) : (
         <Fragment>
-            <h1 className="text-center my-4">Редактирование товара</h1>
+            <h1 className="text-center my-4">Добавление товара</h1>
                 <Row className="justify-content-center">
                 <Col className="col-md-5">
                 <Form className="ml-3 mr-3">
@@ -145,17 +133,14 @@ const EditConfigurator = ({ history }) => {
                     ))}
                     </Form.Control>
                     </Form.Group>
-              <Button onClick={OnSubmit} variant="outline-primary">
-                Сохранить
-              </Button>
-              <Button onClick={Ondel} className="ml-2"  variant="outline-danger">
-                Удалить
-              </Button>
-              </Form>
-            </Col>
-          </Row>
+                    <Button onClick={OnSubmit} variant="primary" type="submit">
+                        Добавить
+                    </Button>
+                </Form>
+                </Col>
+                </Row>
         </Fragment>
-  );
+    );
 };
 
-export default EditConfigurator;
+export default AddProduct;

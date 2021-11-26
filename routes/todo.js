@@ -3,9 +3,10 @@ const { check, validationResult } = require('express-validator');
 const router = express.Router();
 const connectDB = require('../config/database');
 
-//Запросы для процессоров
-router.get("/cpu:id",async (req,res) => {
-    let sql = `SELECT * FROM cpu WHERE id = ${req.params.id} LIMIT 1`;
+//Запросы для сотрудников
+
+router.get("/seller:id",async (req,res) => {
+    let sql = `SELECT * FROM seller WHERE id = ${req.params.id} LIMIT 1`;
     connectDB.query(sql, (err, result) => {
         if(err) {
            res.status(500).send
@@ -15,8 +16,8 @@ router.get("/cpu:id",async (req,res) => {
     })
 });
 
-router.get("/cpu", async (req,res) => {
-    let sql = "SELECT * FROM cpu";
+router.get("/seller", async (req,res) => {
+    let sql = "SELECT * FROM seller";
     connectDB.query(sql, (err, result) => {
         if(err) throw err;
         res.json(result);
@@ -24,15 +25,11 @@ router.get("/cpu", async (req,res) => {
 });
 
 router.post(
-    "/cpu",
+    "/seller",
     [
-        check("brend", "Укажите бренд").not().isEmpty(),
-        check("price", "Укажите цену").not().isEmpty(),
-        check("model", "Укажите модель").not().isEmpty(),
-        check("socket", "Укажите сокет").not().isEmpty(),
-        check("num_of_core", "Укажите количество ядер").not().isEmpty(),
-        check("num_of_threads", "Укажите количество потоков").not().isEmpty(),
-        check("frequency", "Укажите частоту").not().notEmpty(),
+        check("name", "Укажите имя").not().isEmpty(),
+        check("surname", "Укажите Фамилию").not().isEmpty(),
+        check("post", "Укажите должность").not().isEmpty(),
     ],
 
     async (req, res) => {
@@ -42,30 +39,25 @@ router.post(
             return res.status(400).json({errors: errors.array()});
         }
 
-        const {brend, price, model, socket, num_of_core, num_of_threads, frequency} = req.body;
-        let data = {brend, price, model, socket, num_of_core, num_of_threads, frequency};
-        let sql = "INSERT INTO cpu SET ?";
+        const {name, surname, post} = req.body;
+        let data = {name, surname, post};
+        let sql = "INSERT INTO seller SET ?";
 
         connectDB.query(sql, data, (err, result) => {
             if (err) {
                 res.status(500).send("Errors server");
                 throw err;
-            } else res.send("Задача добавлена");
+            } else res.send("Сотрудник добавлен");
         })
 
     }
 );
     router.put(
-        "/cpu",
+        "/seller",
         [
-            check("id", "Вы не выбрали процессор"),
-            check("brend", "Укажите бренд"),
-            check("price", "Укажите цену"),
-            check("model", "Укажите модель"),
-            check("socket", "Укажите сокет"),
-            check("num_of_core", "Укажите количество ядер"),
-            check("num_of_threads", "Укажите количество потоков"),
-            check("frequency", "Укажите частоту")
+            check("name", "Укажите имя").not().isEmpty(),
+            check("surname", "Укажите Фамилию").not().isEmpty(),
+            check("post", "Укажите должность").not().isEmpty(),
         ],
 
         async (req, res) => {
@@ -74,21 +66,21 @@ router.post(
                 return res.status(400).json({ errors: errors.array()});
             }
             
-            const {id, brend, price, model, socket, num_of_core, num_of_threads, frequency} = req.body;
-            let sql = `UPDATE cpu SET brend = "${brend}", price = "${price}", model = "${model}", socket = "${socket}", num_of_core = "${num_of_core}", num_of_threads = "${num_of_threads}", frequency = "${frequency}" WHERE id = "${id}"`
+            const {id, name, surname, post} = req.body;
+            let sql = `UPDATE seller SET name = "${name}", surname = "${surname}", post = "${post}"  WHERE id = "${id}"`
             
             connectDB.query(sql, (err) => {
                 if (err) {
                     res.status(500).send("Ошибка сервера");
                     throw err;
-                } else res.send("Процессор обновлен");
+                } else res.send("Сотрудник обновлен");
             });		
         }
     );
     
     router.delete(
-        "/cpu/:id",
-        [check("id", "Вы не выбрали процессор")],
+        "/seller/:id",
+        [check("id", "Вы не выбрали сотрудника")],
         async (req, res) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -96,742 +88,273 @@ router.post(
             }
             
             let id = req.params.id;
-            let sql = `DELETE FROM cpu WHERE id=${id}`;
+            let sql = `DELETE FROM seller WHERE id=${id}`;
             
             await connectDB.query(sql, (err) => {
                 if (err) {
                     res.status(500).send("Ошибка сервера");
                     throw err;
-                } else res.send("Процессор удален");
+                } else res.send("Сотрудник удален");
             });
         }
     );
+
+//Запросы для поставщиков-изготовителей
+
+    router.get("/manufacturer:id",async (req,res) => {
+        let sql = `SELECT * FROM manufacturer WHERE id = ${req.params.id} LIMIT 1`;
+        connectDB.query(sql, (err, result) => {
+            if(err) {
+               res.status(500).send
+               throw err; 
+            }
+            else res.json(result);
+        })
+    });
     
-    //
-    //Запросы для видеокарт 
-    //
+    router.get("/manufacturer", async (req,res) => {
+        let sql = "SELECT * FROM manufacturer";
+        connectDB.query(sql, (err, result) => {
+            if(err) throw err;
+            res.json(result);
+        })
+    });
     
-    router.get(
-        "/gpu",
-        async (req, res) => {
-            let sql = "SELECT * FROM gpu";
-            connectDB.query(sql, (err, result) => {
-                if(err) throw err;
-                res.json(result);
-            });
-        }
-    );
+    
     
     router.post(
-        "/gpu",
+        "/manufacturer",
         [
-            check("brend", "Укажите бренд"),
-            check("price", "Укажите цену"),
-            check("model", "Укажите модель"),
-            check("memory_size", "Укажите размер памяти"),
-            check("memory_type", "Укажите тип памяти"),
-            check("frequency", "Укажите частоту")
+            check("name", "Укажите название компании").not().isEmpty(),
+            check("country", "Укажите страну").not().isEmpty()
         ],
-
+    
         async (req, res) => {
+    
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
+                return res.status(400).json({errors: errors.array()});
             }
-            
-            const {brend, price, model, memory_size, memory_type, frequency} = req.body;
-            let data = {brend, price, model, memory_size, memory_type, frequency};
-            let sql = "INSERT INTO gpu SET ?";
-            
+    
+            const {name, country} = req.body;
+            let data = {name, country};
+            let sql = "INSERT INTO manufacturer SET ?";
+    
             connectDB.query(sql, data, (err, result) => {
                 if (err) {
-                    res.status(500).send("Ошибка сервера");
+                    res.status(500).send("Errors server");
                     throw err;
-                } else res.send("Видеокарта добавлена");
-            });
+                } else res.send("Компания добавлена");
+            })
+    
         }
     );
+        router.put(
+            "/manufacturer",
+            [
+                check("name", "Укажите название компании").not().isEmpty(),
+                check("country", "Укажите страну").not().isEmpty()
+            ],
     
-    router.put(
-        "/gpu",
-        [
-            check("id", "Вы не выбрали видеокарту"),
-            check("brend", "Укажите бренд"),
-            check("price", "Укажите цену"),
-            check("model", "Укажите модель"),
-            check("memory_size", "Укажите размер памяти"),
-            check("memory_type", "Укажите тип памяти"),
-            check("frequency", "Укажите частоту")
-        ],
+            async (req, res) => {
+                const errors = validationResult(req);
+                if (!errors.isEmpty()) {
+                    return res.status(400).json({ errors: errors.array()});
+                }
+                
+                const {id, name, country} = req.body;
+                let sql = `UPDATE manufacturer SET name = "${name}", country = "${country}" WHERE id = "${id}"`
+                
+                connectDB.query(sql, (err) => {
+                    if (err) {
+                        res.status(500).send("Ошибка сервера");
+                        throw err;
+                    } else res.send("Компания обновлена");
+                });		
+            }
+        );
+        
+        router.delete(
+            "/manufacturer/:id",
+            [check("id", "Вы не выбрали компанию")],
+            async (req, res) => {
+                const errors = validationResult(req);
+                if (!errors.isEmpty()) {
+                    return res.status(400).json({ errors: errors.array() });
+                }
+                
+                let id = req.params.id;
+                let sql = `DELETE FROM manufacturer WHERE id=${id}`;
+                
+                await connectDB.query(sql, (err) => {
+                    if (err) {
+                        res.status(500).send("Ошибка сервера");
+                        throw err;
+                    } else res.send("Компания удалена");
+                });
+            }
+        );
+    
+//Запросы для категорий
 
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array()});
+    router.get("/categories:id",async (req,res) => {
+        let sql = `SELECT * FROM categories WHERE id = ${req.params.id} LIMIT 1`;
+        connectDB.query(sql, (err, result) => {
+            if(err) {
+               res.status(500).send
+               throw err; 
             }
-            
-            const {id, brend, price, model, socket, memory_size, memory_type, frequency} = req.body;
-            let sql = `UPDATE gpu SET brend = "${brend}", price = "${price}", model = "${model}", memory_size = "${memory_size}", memory_type = "${memory_type}", frequency = "${frequency} "  WHERE id = "${id}"`
-            
-            connectDB.query(sql, (err) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Видеокарта обновлена");
-            });		
-        }
-    );
+            else res.json(result);
+        })
+    });
     
-    router.delete(
-        "/gpu/:id",
-        [check("id", "Вы не выбрали видеокарту")],
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-            
-            let id = req.params.id;
-            let sql = `DELETE FROM gpu WHERE id=${id}`;
-            
-            await connectDB.query(sql, (err) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Видеокарта удалена");
-            });
-        }
-    );
+    router.get("/categories", async (req,res) => {
+        let sql = "SELECT * FROM categories";
+        connectDB.query(sql, (err, result) => {
+            if(err) throw err;
+            res.json(result);
+        })
+    });
     
-    //
-    //Запросы для hdd
-    //
     
-    router.get(
-        "/hdd",
-        async (req, res) => {
-            let sql = "SELECT * FROM hdd";
-            connectDB.query(sql, (err, result) => {
-                if(err) throw err;
-                res.json(result);
-            });
-        }
-    );
     
     router.post(
-        "/hdd",
+        "/categories",
         [
-            check("brend", "Укажите бренд"),
-            check("price", "Укажите цену"),
-            check("model", "Укажите модель"),
-            check("memory_size", "Укажите размер памяти"),
+            check("name", "Укажите название категории").not().isEmpty()
         ],
-
+    
         async (req, res) => {
+    
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
+                return res.status(400).json({errors: errors.array()});
             }
-            
-            const {brend, price, model, memory_size} = req.body;
-            let data = {brend, price, model, memory_size};
-            let sql = "INSERT INTO hdd SET ?";
-            
-            connectDB.query(sql, data, (err, result) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Жесткий диск добавлен");
-            });
-        }
-    );
     
-    router.put(
-        "/hdd",
-        [
-            check("id", "Вы не выбрали жесткий диск"),
-            check("brend", "Укажите бренд"),
-            check("price", "Укажите цену"),
-            check("model", "Укажите модель"),
-            check("memory_size", "Укажите размер памяти")
-        ],
-
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array()});
-            }
-            
-            const {id, brend, price, model, memory_size} = req.body;
-            let sql = `UPDATE hdd SET brend = "${brend}", price = "${price}", model = "${model}", memory_size = "${memory_size}"  WHERE id = "${id}`
-            
-            connectDB.query(sql, (err) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Жесткий диск обновлен");
-            });		
-        }
-    );
-    
-    router.delete(
-        "/hdd/:id",
-        [check("id", "Вы не выбрали жесткий диск")],
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-            
-            let id = req.params.id;
-            let sql = `DELETE FROM hdd WHERE id=${id}`;
-            
-            await connectDB.query(sql, (err) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Жесткий диск удален");
-            });
-        }
-    );
-    
-    //
-    //Запросы для материнских плат
-    //
-    
-    router.get(
-        "/motherboard",
-        async (req, res) => {
-            let sql = "SELECT * FROM mother_board";
-            connectDB.query(sql, (err, result) => {
-                if(err) throw err;
-                res.json(result);
-            });
-        }
-    );
-    
-    router.post(
-        "/motherboard",
-        [
-            check("brend", "Укажите бренд"),
-            check("price", "Укажите цену"),
-            check("model", "Укажите модель"),
-            check("socket", "Укажите сокет"),
-            check("chipset", "Укажите чипсет"),
-            check("memory_type", "Укажите тип памяти")
-        ],
-
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-            
-            const {brend, price, model, socket, chipset, memory_type} = req.body;
-            let data = {brend, price, model, socket, chipset, memory_type};
-            let sql = "INSERT INTO mother_board SET ?";
-            
-            connectDB.query(sql, data, (err, result) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Материнская плата добавлена");
-            });
-        }
-    );
-    
-    router.put(
-        "/motherboard",
-        [
-            check("id", "Вы не выбрали материнскую плату"),
-            check("brend", "Укажите бренд"),
-            check("price", "Укажите цену"),
-            check("model", "Укажите модель"),
-            check("socket", "Укажите сокет"),
-            check("chipset", "Укажите чипсет"),
-            check("memory_type", "Укажите тип памяти")
-        ],
-
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array()});
-            }
-            
-            const {id, brend, price, model, socket, chipset, memory_type} = req.body;
-            let sql = `UPDATE mother_board SET brend = "${brend}", price = "${price}", model = "${model}", socket = "${socket}", chipset = "${chipset}", memory_type = "${memory_type}"  WHERE id = "${id}"`
-            
-            connectDB.query(sql, (err) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Материнская плата обновлена");
-            });		
-        }
-    );
-    
-    router.delete(
-        "/motherboard/:id",
-        [check("id", "Вы не выбрали материнскую плату")],
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-            
-            let id = req.params.id;
-            let sql = `DELETE FROM mother_board WHERE id=${id}`;
-            
-            await connectDB.query(sql, (err) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Материнская плата удалена");
-            });
-        }
-    );
-    
-    //
-    // Запросы блоков питания
-    //
-    
-    router.get(
-        "/power",
-        async (req, res) => {
-            let sql = "SELECT * FROM power_sup";
-            connectDB.query(sql, (err, result) => {
-                if(err) throw err;
-                res.json(result);
-            });
-        }
-    );
-    
-    router.post(
-        "/power",
-        [
-            check("brend", "Укажите бренд"),
-            check("price", "Укажите цену"),
-            check("model", "Укажите модель"),
-            check("power", "Укажите мощность"),
-            check("form_factor", "Укажите форм фактор")
-        ],
-
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-            
-            const {brend, price, model, power, form_factor} = req.body;
-            let data = {brend, price, model, power, form_factor};
-            let sql = "INSERT INTO power_sup SET ?";
-            
-            connectDB.query(sql, data, (err, result) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Блок питания добавлен");
-            });
-        }
-    );
-    
-    router.put(
-        "/power",
-        [
-            check("id", "Вы не выбрали блок питания"),
-            check("brend", "Укажите бренд"),
-            check("price", "Укажите цену"),
-            check("model", "Укажите модель"),
-            check("power", "Укажите мощность"),
-            check("form_factor", "Укажите форм фактор")
-        ],
-
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array()});
-            }
-            
-            const {id, brend, price, model, power, form_factor} = req.body;
-            let sql = `UPDATE power_sup SET brend = "${brend}", price = "${price}", model = "${model}", power = "${power}", form_factor = "${form_factor}"  WHERE id = "${id}"`
-            
-            connectDB.query(sql, (err) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Блок питания обновлен");
-            });		
-        }
-    );
-    
-    router.delete(
-        "/power/:id",
-        [check("id", "Вы не выбрали блок питания")],
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-            
-            let id = req.params.id;
-            let sql = `DELETE FROM power_sup WHERE id=${id}`;
-            
-            await connectDB.query(sql, (err) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Блок питания удален");
-            });
-        }
-    );
-    
-    //
-    // Запросы для Оперативной памяти
-    //
-    
-    router.get(
-        "/Ram",
-        async (req, res) => {
-            let sql = "SELECT * FROM ram";
-            connectDB.query(sql, (err, result) => {
-                if(err) throw err;
-                res.json(result);
-            });
-        }
-    );
-    
-    router.post(
-        "/Ram",
-        [
-            check("brend", "Укажите бренд"),
-            check("price", "Укажите цену"),
-            check("model", "Укажите модель"),
-            check("memory_size", "Укажите размер памяти"),
-            check("memory_type", "Укажите тип памяти")
-            
-        ],
-
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-            
-            const {brend, price, model, memory_size, memory_type} = req.body;
-            let data = {brend, price, model, memory_size, memory_type};
-            let sql = "INSERT INTO ram SET ?";
-            
-            connectDB.query(sql, data, (err, result) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Оперативная память добавлена");
-            });
-        }
-    );
-    
-    router.put(
-        "/Ram",
-        [
-            check("id", "Вы не выбрали оператинвую память"),
-            check("brend", "Укажите бренд"),
-            check("price", "Укажите цену"),
-            check("model", "Укажите модель"),
-            check("memory_size", "Укажите размер памяти"),
-            check("memory_type", "Укажите тип памяти")
-        ],
-
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array()});
-            }
-            
-            const {id, brend, price, model,  memory_size, memory_type} = req.body;
-            let sql = `UPDATE ram SET brend = "${brend}", price = "${price}", model = "${model}", memory_size = "${memory_size}", memory_type = "${memory_type}"  WHERE id = "${id}"`
-            
-            connectDB.query(sql, (err) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Оперативная память обновлена");
-            });		
-        }
-    );
-    
-    router.delete(
-        "/Ram/:id",
-        [check("id", "Вы не выбрали оперативную память")],
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-            
-            let id = req.params.id;
-            let sql = `DELETE FROM ram WHERE id=${id}`;
-            
-            await connectDB.query(sql, (err) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Оперативная память удалена");
-            });
-        }
-    );
-    
-    //
-    //Запросы ролей
-    //
-    
-    router.get(
-        "/",
-        async (req, res) => {
-            let sql = "SELECT * FROM role";
-            connectDB.query(sql, (err, result) => {
-                if(err) throw err;
-                res.json(result);
-            });
-        }
-    );
-    
-    router.post(
-        "/",
-        [
-            check("name", "Укажите название роли")
-            
-        ],
-
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-            
             const {name} = req.body;
             let data = {name};
-            let sql = "INSERT INTO role SET ?";
-            
+            let sql = "INSERT INTO categories SET ?";
+    
             connectDB.query(sql, data, (err, result) => {
                 if (err) {
-                    res.status(500).send("Ошибка сервера");
+                    res.status(500).send("Errors server");
                     throw err;
-                } else res.send("Роль добавлена");
-            });
-        }
-    );
-    
-    router.put(
-        "/",
-        [
-            check("id", "Вы не выбрали роль"),
-            check("name", "Укажите название роли"),
-        ],
-
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array()});
-            }
-            
-            const {id, name} = req.body;
-            let sql = `UPDATE ram SET name = "${name}"`
-            
-            connectDB.query(sql, (err) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Роль обновлена");
-            });		
-        }
-    );
-    
-    router.delete(
-        "/",
-        [check("id", "Вы не выбрали роль")],
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-            
-            let id = req.params.id;
-            let sql = `DELETE FROM role WHERE id=${id}`;
-            
-            await connectDB.query(sql, (err) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Роль удалена");
-            });
-        }
-    );
-    
-    //
-    //Запросы пользователей
-    //
-    
-    router.get(
-        "/",
-        async (req, res) => {
-            let sql = "SELECT * FROM users";
-            connectDB.query(sql, (err, result) => {
-                if(err) throw err;
-                res.json(result);
-            });
-        }
-    );
-    
-    router.post(
-        "/",
-        [
-        
-            check("login", "Укажите логин"),
-            check("password", "Укажите пароль"),
-            check("id_role", "Укажите роль"),
-            check("id_components", "Укажите сборку")
-            
-        ],
-
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-            
-            const {login, password, id_role, id_components} = req.body;
-            let data = {login, password, id_role, id_components};
-            let sql = "INSERT INTO users SET ?";
-            
-            connectDB.query(sql, data, (err, result) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Пользователь добавлен");
-            });
-        }
-    );
-    
-    router.put(
-        "/",
-        [
-            check("id", "Вы не выбрали пользователя"),
-            check("login", "Укажите логин"),
-            check("password", "Укажите пароль"),
-            check("id_role", "Укажите роль"),
-            check("id_components", "Укажите сборку")
-        ],
-
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array()});
-            }
-            
-            const {id, login, password, id_role, id_components} = req.body;
-            let sql = `UPDATE ram SET login = "${login}", password = "${password}", id_role = "${id_role}", id_components = "${id_components}"  WHERE id = "${id}`
-            
-            connectDB.query(sql, (err) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Пользователь обновлен");
-            });		
-        }
-    );
-    
-    router.delete(
-        "/",
-        [check("id", "Вы не выбрали пользователя")],
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-            
-            let id = req.params.id;
-            let sql = `DELETE FROM users WHERE id=${id}`;
-            
-            await connectDB.query(sql, (err) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Пользователь удален");
-            });
-        }
-    );
-    
-    //
-    //Запрос компонентов или сборки
-    //
-    
-    router.get(
-        "/components",
-        async (req, res) => {
-            let sql = "SELECT * FROM components";
-            connectDB.query(sql, (err, result) => {
-                if(err) throw err;
-                res.json(result);
-            });
-        }
-    );
-    router.get(
-        "/components/:id",
-        async (req, res) => {
-            let sql = `SELECT * FROM cpu WHERE id = ${req.params.id} LIMIT 1`;
-            connectDB.query(sql, (err, result) => {
-                if(err) {
-                   res.status(500).send
-                   throw err; 
-                }
-                else res.json(result);
+                } else res.send("Категория добавлена");
             })
-    }
-    );
     
-    router.post(
-        "/components",
-        [
-        
-            check("name", "Укажите название сборки").not().isEmpty(),
-            check("id_cpu", "Укажите процессор").not().isEmpty(),
-            check("id_gpu", "Укажите видеокарту"),
-            check("id_motherboard", "Укажите материнскую плату").not().isEmpty(),
-            check("id_ram", "Укажите оперативную память").not().isEmpty(),
-            check("id_power_sup", "Укажите блок питания").not().isEmpty(),
-            check("id_hdd", "Укажите жесткий диск").not().isEmpty()
-        ],
-
-        async (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-            
-            const {name, id_cpu, id_gpu, id_motherboard, id_ram, id_power_sup, id_hdd} = req.body;
-            let data = {name, id_cpu, id_gpu, id_motherboard, id_ram, id_power_sup, id_hdd};
-            let sql = "INSERT INTO components SET ?";
-            
-            connectDB.query(sql, data, (err, result) => {
-                if (err) {
-                    res.status(500).send("Ошибка сервера");
-                    throw err;
-                } else res.send("Сборка добавлена");
-            });
         }
     );
+        router.put(
+            "/categories",
+            [
+                check("name", "Укажите название категории").not().isEmpty()
+            ],
     
+            async (req, res) => {
+                const errors = validationResult(req);
+                if (!errors.isEmpty()) {
+                    return res.status(400).json({ errors: errors.array()});
+                }
+                
+                const {id, name} = req.body;
+                let sql = `UPDATE categories SET name = "${name}" WHERE id = "${id}"`
+                
+                connectDB.query(sql, (err) => {
+                    if (err) {
+                        res.status(500).send("Ошибка сервера");
+                        throw err;
+                    } else res.send("Категория обновлена");
+                });		
+            }
+        );
+        
+        router.delete(
+            "/categories/:id",
+            [check("id", "Вы не выбрали категорию")],
+            async (req, res) => {
+                const errors = validationResult(req);
+                if (!errors.isEmpty()) {
+                    return res.status(400).json({ errors: errors.array() });
+                }
+                
+                let id = req.params.id;
+                let sql = `DELETE FROM categories WHERE id=${id}`;
+                
+                await connectDB.query(sql, (err) => {
+                    if (err) {
+                        res.status(500).send("Ошибка сервера");
+                        throw err;
+                    } else res.send("Категория удалена");
+                });
+            }
+        );
+
+//Запросы для товаров
+
+router.get("/products",async (req,res) => {
+    const {name} = req.body;
+    let sql = `SELECT * FROM product WHERE name = "${name}" LIMIT 1`;
+    connectDB.query(sql, (err, result) => {
+        if(err) {
+           res.status(500).send
+           throw err; 
+        }
+        else res.json(result);
+    })
+});
+
+router.get("/product", async (req,res) => {
+    let sql = "SELECT * FROM product";
+    connectDB.query(sql, (err, result) => {
+        if(err) throw err;
+        res.json(result);
+    })
+});
+
+
+
+router.post(
+    "/product",
+    [
+        check("name", "Укажите название продукта").not().isEmpty(),
+        check("count", "Укажите количество продукта").not().isEmpty(),
+        check("price", "Укажите цену продукта").not().isEmpty(),
+        check("manufactured_time", "Укажите дату изготовления").not().isEmpty(),
+        check("expiration_date", "Укажите срок годности").not().isEmpty(),
+        check("manufacturer_id", "Укажите изготовителя").not().isEmpty(),
+        check("categories_id", "Укажите категорию").not().isEmpty()
+    ],
+
+    async (req, res) => {
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({errors: errors.array()});
+        }
+
+        const {name, count, price, manufactured_time, expiration_date, manufacturer_id, categories_id} = req.body;
+        let data = {name, count, price, manufactured_time, expiration_date, manufacturer_id, categories_id};
+        let sql = "INSERT INTO product SET ?";
+
+        connectDB.query(sql, data, (err, result) => {
+            if (err) {
+                res.status(500).send("Errors server");
+                throw err;
+            } else res.send("Продукт добавлен");
+        })
+
+    }
+);
     router.put(
-        "/components/:id",
+        "/product/:id",
         [
-            check("id", "Укажите id сборки"),
-            check("name", "Укажите название сборки").not().isEmpty(),
-            check("id_cpu", "Укажите процессор").not().isEmpty(),
-            check("id_gpu", "Укажите видеокарту").not().isEmpty(),
-            check("id_motherboard", "Укажите материнскую плату").not().isEmpty(),
-            check("id_ram", "Укажите оперативную память").not().isEmpty(),
-            check("id_power_sup", "Укажите блок питания").not().isEmpty(),
-            check("id_hdd", "Укажите жесткий диск").not().isEmpty()
+            check("name", "Укажите название продукта").not().isEmpty(),
+            check("count", "Укажите количество продукта").not().isEmpty(),
+            check("price", "Укажите цену продукта").not().isEmpty(),
+            check("manufactured_time", "Укажите дату изготовления").not().isEmpty(),
+            check("expiration_date", "Укажите срок годности").not().isEmpty(),
+            check("manufacturer_id", "Укажите изготовителя").not().isEmpty(),
+            check("categories_id", "Укажите категорию").not().isEmpty()
         ],
 
         async (req, res) => {
@@ -839,22 +362,49 @@ router.post(
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array()});
             }
+            
+            const { name, count, price, manufactured_time, expiration_date, manufacturer_id, categories_id} = req.body;
             let id = req.params.id;
-            const {name, id_cpu, id_gpu, id_motherboard, id_ram, id_power_sup, id_hdd} = req.body;
-            let sql = `UPDATE components SET name = "${name}", id_cpu = "${id_cpu}", id_gpu = "${id_gpu}", id_motherboard = "${id_motherboard}", id_ram = "${id_ram}", id_power_sup = "${id_power_sup}", id_hdd = "${id_hdd}"  WHERE id = "${id}"`
+            let sql = `UPDATE product SET name = "${name}", count = "${count}", price = "${price}", manufactured_time ="${manufactured_time}", expiration_date = "${expiration_date}", manufacturer_id = "${manufacturer_id}", categories_id = "${categories_id}"  WHERE id = "${id}"`
             
             connectDB.query(sql, (err) => {
                 if (err) {
                     res.status(500).send("Ошибка сервера");
                     throw err;
-                } else console.log("Obnova"), res.send("Сборка обновлена");
+                } else res.send("Товар обновлен");
+            });		
+        }
+    );
+
+    router.put(
+        "/productOrder/:id",
+        [
+            check("count", "Укажите количество продукта").not().isEmpty(),
+        ],
+
+        async (req, res) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array()});
+            }
+            
+           
+            let id = req.params.id;
+            const {count} = req.body;
+            let sql = `UPDATE product SET count = count -"${count}" WHERE id = "${id}"`
+            
+            connectDB.query(sql, (err) => {
+                if (err) {
+                    res.status(500).send("Ошибка сервера");
+                    throw err;
+                } else res.send("Товар обновлен");
             });		
         }
     );
     
     router.delete(
-        "/components/:id",
-        [check("id", "Вы не выбрали сборку")],
+        "/product/:id",
+        [check("id", "Вы не выбрали товар")],
         async (req, res) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -862,15 +412,114 @@ router.post(
             }
             
             let id = req.params.id;
-            let sql = `DELETE FROM components WHERE id=${id}`;
+            let sql = `DELETE FROM product WHERE id=${id}`;
             
             await connectDB.query(sql, (err) => {
                 if (err) {
                     res.status(500).send("Ошибка сервера");
                     throw err;
-                } else res.send("Сборка удаленa");
+                } else res.send("Товар удален");
             });
         }
     );
     
+//Запросы для заказов\продажи
+
+router.get("/order:id",async (req,res) => {
+    let sql = `SELECT * FROM` + "`order`" + `WHERE id = ${req.params.id} LIMIT 1`;
+    connectDB.query(sql, (err, result) => {
+        if(err) {
+           res.status(500).send
+           throw err; 
+        }
+        else res.json(result);
+    })
+});
+
+router.get("/order", async (req,res) => {
+    let sql = "SELECT * FROM `order`";
+    connectDB.query(sql, (err, result) => {
+        if(err) throw err;
+        res.json(result);
+    })
+});
+
+
+
+router.post(
+    "/order",
+    [
+        check("count", "Укажите количество продукта").not().isEmpty(),
+        check("seller_id", "Укажите продавца").not().isEmpty(),
+    ],
+
+    async (req, res) => {
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({errors: errors.array()});
+        }
+
+        const {name, price, count,  seller_id, product_id} = req.body;
+        let data = {name, price, count, seller_id, product_id};
+        let sql = `INSERT INTO` + "`order` (name, price, count, datetime, seller_id, product_id) " + `VALUES ( "${name}", "${price * count}", "${count}", NOW(), "${seller_id}", "${product_id}")`;
+
+        connectDB.query(sql, data, (err, result) => {
+            if (err) {
+                res.status(500).send("Errors server");
+                throw err;
+            } else res.send("Продажа оформлена");
+        })
+
+    }
+);
+    router.put(
+        "/order",
+        [
+            check("count", "Укажите количество продукта").not().isEmpty(),
+            check("datetime", "Укажите дату покупки").not().isEmpty(),
+            check("seller_id", "Укажите продавца").not().isEmpty(),
+            check("product_id", "Укажите продукт").not().isEmpty()
+        ],
+
+        async (req, res) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array()});
+            }
+            
+            const {id, count, datetime, seller_id, product_id} = req.body;
+            let sql = `UPDATE ` + "`order`" +` SET count = "${count}", datetime = "${datetime}", seller_id = "${seller_id}", product_id ="${product_id}" WHERE id = "${id}"`
+            
+            connectDB.query(sql, (err) => {
+                if (err) {
+                    res.status(500).send("Ошибка сервера");
+                    throw err;
+                } else res.send("Продажа обновлена");
+            });		
+        }
+    );
+    
+    router.delete(
+        "/order/:id",
+        [check("id", "Вы не выбрали продажу")],
+        async (req, res) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+            
+            let id = req.params.id;
+            let sql = `DELETE FROM` +"`order`" + ` WHERE id=${id}`;
+            
+            await connectDB.query(sql, (err) => {
+                if (err) {
+                    res.status(500).send("Ошибка сервера");
+                    throw err;
+                } else res.send("Продажа удалена");
+            });
+        }
+    );
+
+
 module.exports = router;

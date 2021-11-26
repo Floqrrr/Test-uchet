@@ -1,13 +1,11 @@
 import axios from "axios";
 
 export const getData = async () => {
-  const component = await axios.get("/api/todo/components");
-  const cpu = await axios.get("/api/todo/cpu");
-  const gpu = await axios.get("/api/todo/gpu");
-  const motherboard = await axios.get("/api/todo/motherboard");
-  const hdd = await axios.get("/api/todo/hdd");
-  const ram = await axios.get("/api/todo/ram");
-  const power = await axios.get("/api/todo/power");
-  return { cpus: cpu.data, gpus: gpu.data, motherboards: motherboard.data, hdds: hdd.data, rams: ram.data, powers: power.data, components: component.data };
+  const product = await axios.get("/api/todo/product");
+  const seller = await axios.get("/api/todo/seller");
+  const order = await axios.get("/api/todo/order");
+  const manufacturer = await axios.get("/api/todo/manufacturer");
+  const categories = await axios.get("/api/todo/categories");
+  return { products: product.data, sellers: seller.data, orders: order.data, manufacturers: manufacturer.data, categoriess: categories.data};
 };
 
