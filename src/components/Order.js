@@ -192,7 +192,7 @@ const AddCategory = ({ history }) => {
                         value={item.id}
                         key={item.id}
                         >
-                        {item.name + " " + item.surname + " " + item.post}
+                        {item.name + " " + item.surname}
                         </option>
                     ))}
                     </Form.Control>

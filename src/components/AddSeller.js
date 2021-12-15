@@ -6,8 +6,7 @@ import { SendTodoAddSeller, SendTodoDeleteSeller } from "./actions/sendTodo";
 const initialState = {
     name: "",
     surname: "",
-    post: "",
-    categories_id: 1
+    departament_id : 2    
 };
 
 const AddCategory = ({ history }) => {
@@ -43,23 +42,13 @@ const AddCategory = ({ history }) => {
       }
       else
       {
-          if(formData.post === "")
-        {
-          alert("Введие должность сотрудника")
-        }
-        else if(/^(0|-?[1-9]\d{0,5})$/.test(formData.post))
-        {
-          alert("Название должности не должно быть буквенными или с содержание цифр")
-        }
-        else
-        {
+         
+          console.log(formData)
           SendTodoAddSeller(formData);
-          window.location.reload();
-        }
+          //window.location.reload();
       }
     }
 
-    console.log(categories_id);
   };
 
   const Ondel = (e)=> {
@@ -68,7 +57,7 @@ const AddCategory = ({ history }) => {
     window.location.reload();
   }
 
-  const { name, surname, post, manufactured_time, expiration_date, manufacturer_id, categories_id } = formData;
+  const { name, surname, departament_id, post_id, year_of_birth, admission, experience, sex, address, city,  number, categories_id } = formData;
 
   useEffect(() => {
     getData().then((result) => setData(result));
@@ -86,7 +75,39 @@ const AddCategory = ({ history }) => {
                         <Form.Label>Добавление нового сотрудника</Form.Label>
                         <Form.Control className="mb-3" placeholder="Имя" type="text" name="name" value={name} onChange={OnChange}/>
                         <Form.Control className="mb-3" placeholder="Фамилия" type="text" name="surname" value={surname} onChange={OnChange}/>
-                        <Form.Control className="mb-3" placeholder="Должность" type="text" name="post" value={post} onChange={OnChange}/>
+                        <Form.Text>Выберите отдел</Form.Text>
+                        <Form.Control className="mb-3" as="select" name="departament_id" onChange={OnChange}  value={departament_id}>
+                            {data.departaments.map((item) => (
+                                <option
+                                as="button"
+                                id={departament_id}
+                                value={item.id}
+                                key={item.id}
+                                >
+                                {item.title}
+                                </option>
+                            ))}
+                        </Form.Control>
+                        <Form.Text>Выберите должность</Form.Text>
+                        <Form.Control className="mb-3" as="select" name="post_id" onChange={OnChange}  value={post_id}>
+                            {data.posts.map((item) => (
+                                <option
+                                as="button"
+                                id={post_id}
+                                value={item.id}
+                                key={item.id}
+                                >
+                                {item.title}
+                                </option>
+                            ))}
+                        </Form.Control>
+                        <Form.Control className="mb-3" placeholder="Дата рождения" type="text" name="year_of_birth" value={year_of_birth} onChange={OnChange}/>
+                        <Form.Control className="mb-3" placeholder="Дата приёма" type="text" name="admission" value={admission} onChange={OnChange}/>
+                        <Form.Control className="mb-3" placeholder="Стаж" type="text" name="experience" value={experience} onChange={OnChange}/>
+                        <Form.Control className="mb-3" placeholder="Пол" type="text" name="sex" value={sex} onChange={OnChange}/>
+                        <Form.Control className="mb-3" placeholder="Адрес" type="text" name="address" value={address} onChange={OnChange}/>
+                        <Form.Control className="mb-3" placeholder="Город" type="text" name="city" value={city} onChange={OnChange}/>
+                        <Form.Control className="mb-3" placeholder="Номер телефона" type="text" name="number" value={number} onChange={OnChange}/>
                     </Form.Group>
                     <Button className="mb-3" onClick={OnSubmit} variant="primary" type="submit">
                         Добавить
@@ -101,7 +122,7 @@ const AddCategory = ({ history }) => {
                         value={item.id}
                         key={item.id}
                         >
-                        {item.name + " " + item.surname + " " + item.post}
+                        {item.name + " " + item.surname}
                         </option>
                     ))}
                     </Form.Control>

@@ -29,7 +29,16 @@ router.post(
     [
         check("name", "Укажите имя").not().isEmpty(),
         check("surname", "Укажите Фамилию").not().isEmpty(),
-        check("post", "Укажите должность").not().isEmpty(),
+        check("departament_id", "Укажите отдел").not().isEmpty(),
+        check("post_id", "Укажите должность").not().isEmpty(),
+        check("year_of_birth", "Укажите дата").not().isEmpty(),
+        check("admission", "Укажите отдел").not().isEmpty(),
+        check("experience", "Укажите стаж").not().isEmpty(),
+        check("sex", "Укажите пол").not().isEmpty(),
+        check("address", "Укажите адрес").not().isEmpty(),
+        check("city", "Укажите город").not().isEmpty(),
+        check("number", "Укажите номер").not().isEmpty(),
+
     ],
 
     async (req, res) => {
@@ -39,8 +48,8 @@ router.post(
             return res.status(400).json({errors: errors.array()});
         }
 
-        const {name, surname, post} = req.body;
-        let data = {name, surname, post};
+        const {name, surname, departament_id, post_id, year_of_birth, admission, experience, sex, address, city,  number} = req.body;
+        let data = {name, surname, departament_id, post_id, year_of_birth, admission, experience, sex, address, city,  number};
         let sql = "INSERT INTO seller SET ?";
 
         connectDB.query(sql, data, (err, result) => {
@@ -57,7 +66,15 @@ router.post(
         [
             check("name", "Укажите имя").not().isEmpty(),
             check("surname", "Укажите Фамилию").not().isEmpty(),
-            check("post", "Укажите должность").not().isEmpty(),
+            check("departament_id", "Укажите отдел").not().isEmpty(),
+            check("post_id", "Укажите должность").not().isEmpty(),
+            check("year_of_birth", "Укажите дата").not().isEmpty(),
+            check("admission", "Укажите отдел").not().isEmpty(),
+            check("experience", "Укажите стаж").not().isEmpty(),
+            check("sex", "Укажите пол").not().isEmpty(),
+            check("address", "Укажите адрес").not().isEmpty(),
+            check("city", "Укажите город").not().isEmpty(),
+            check("number", "Укажите номер").not().isEmpty(),
         ],
 
         async (req, res) => {
@@ -66,8 +83,8 @@ router.post(
                 return res.status(400).json({ errors: errors.array()});
             }
             
-            const {id, name, surname, post} = req.body;
-            let sql = `UPDATE seller SET name = "${name}", surname = "${surname}", post = "${post}"  WHERE id = "${id}"`
+            const {name, surname, departament_id, post_id, year_of_birth, admission, experience, sex, address, city,  number} = req.body;
+            let sql = `UPDATE seller SET name = "${name}", surname = "${surname}", departament_id = "${departament_id}", post_id = "${post_id}", year_of_birth = "${year_of_birth}", admission = "${admission}", experience = "${experience}", sex = "${sex}", address = "${address}", city = "${city}", number = "${number}" WHERE id = "${id}"`
             
             connectDB.query(sql, (err) => {
                 if (err) {
@@ -521,5 +538,202 @@ router.post(
         }
     );
 
+    //post dolznost'
+
+    router.get("/post:id",async (req,res) => {
+        let sql = `SELECT * FROM post WHERE id = ${req.params.id} LIMIT 1`;
+        connectDB.query(sql, (err, result) => {
+            if(err) {
+               res.status(500).send
+               throw err; 
+            }
+            else res.json(result);
+        })
+    });
+    
+    router.get("/post", async (req,res) => {
+        let sql = "SELECT * FROM post";
+        connectDB.query(sql, (err, result) => {
+            if(err) throw err;
+            res.json(result);
+        })
+    });
+    
+    
+    
+    router.post(
+        "/post",
+        [
+            check("title", "Укажите название должности").not().isEmpty(),
+            check("salary", "Укажите ЗП").not().isEmpty()
+        ],
+    
+        async (req, res) => {
+    
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({errors: errors.array()});
+            }
+    
+            const {title, salary} = req
+            .body;
+            let data = {title, salary};
+            let sql = "INSERT INTO post SET ?";
+    
+            connectDB.query(sql, data, (err, result) => {
+                if (err) {
+                    res.status(500).send("Errors server");
+                    throw err;
+                } else res.send("должность добавлена");
+            })
+    
+        }
+    );
+        router.put(
+            "/post",
+            [
+                check("title", "Укажите название должности").not().isEmpty(),
+                check("salary", "Укажите ЗП").not().isEmpty()
+            ],
+    
+            async (req, res) => {
+                const errors = validationResult(req);
+                if (!errors.isEmpty()) {
+                    return res.status(400).json({ errors: errors.array()});
+                }
+                
+                const {id, name, country} = req.body;
+                let sql = `UPDATE post SET title = "${title}", salary = "${salary}" WHERE id = "${id}"`
+                
+                connectDB.query(sql, (err) => {
+                    if (err) {
+                        res.status(500).send("Ошибка сервера");
+                        throw err;
+                    } else res.send("ZP обновлена");
+                });		
+            }
+        );
+        
+        router.delete(
+            "/post/:id",
+            [check("id", "Вы не выбрали dolznost'")],
+            async (req, res) => {
+                const errors = validationResult(req);
+                if (!errors.isEmpty()) {
+                    return res.status(400).json({ errors: errors.array() });
+                }
+                
+                let id = req.params.id;
+                let sql = `DELETE FROM post WHERE id=${id}`;
+                
+                await connectDB.query(sql, (err) => {
+                    if (err) {
+                        res.status(500).send("Ошибка сервера");
+                        throw err;
+                    } else res.send("post удален");
+                });
+            }
+        );
+
+        //departament
+
+        router.get("/departament:id",async (req,res) => {
+            let sql = `SELECT * FROM departament WHERE id = ${req.params.id} LIMIT 1`;
+            connectDB.query(sql, (err, result) => {
+                if(err) {
+                   res.status(500).send
+                   throw err; 
+                }
+                else res.json(result);
+            })
+        });
+        
+        router.get("/departament", async (req,res) => {
+            let sql = "SELECT * FROM departament";
+            connectDB.query(sql, (err, result) => {
+                if(err) throw err;
+                res.json(result);
+            })
+        });
+        
+        
+        
+        router.post(
+            "/departament",
+            [
+                check("title", "Укажите название отдел").not().isEmpty(),
+                check("counter", "Укажите количество прилавков").not().isEmpty(),
+                check("cooperator", "Укажите количество сотрудников").not().isEmpty(),
+                check("hall", "Укажите номер зала ").not().isEmpty()
+            ],
+        
+            async (req, res) => {
+        
+                const errors = validationResult(req);
+                if (!errors.isEmpty()) {
+                    return res.status(400).json({errors: errors.array()});
+                }
+        
+                const {title, counter, cooperator, hall} = req
+                .body;
+                let data = {title, counter, cooperator, hall};
+                let sql = "INSERT INTO departament SET ?";
+        
+                connectDB.query(sql, data, (err, result) => {
+                    if (err) {
+                        res.status(500).send("Errors server");
+                        throw err;
+                    } else res.send("отдел добавлен");
+                })
+        
+            }
+        );
+            router.put(
+                "/departament",
+                [
+                    check("title", "Укажите название отдел").not().isEmpty(),
+                    check("counter", "Укажите количество прилавков").not().isEmpty(),
+                    check("cooperator", "Укажите количество сотрудников").not().isEmpty(),
+                    check("hall", "Укажите номер зала ").not().isEmpty()
+                ],
+        
+                async (req, res) => {
+                    const errors = validationResult(req);
+                    if (!errors.isEmpty()) {
+                        return res.status(400).json({ errors: errors.array()});
+                    }
+                    
+                    const {id, title, counter, cooperator, hall} = req.body;
+                    let sql = `UPDATE departament SET title = "${title}", counter = "${counter}", cooperator = "${cooperator}", hall = "${hall}", WHERE id = "${id}"`
+                    
+                    connectDB.query(sql, (err) => {
+                        if (err) {
+                            res.status(500).send("Ошибка сервера");
+                            throw err;
+                        } else res.send("Отдел обновлен");
+                    });		
+                }
+            );
+            
+            router.delete(
+                "/departament/:id",
+                [check("id", "Вы не выбрали отдел'")],
+                async (req, res) => {
+                    const errors = validationResult(req);
+                    if (!errors.isEmpty()) {
+                        return res.status(400).json({ errors: errors.array() });
+                    }
+                    
+                    let id = req.params.id;
+                    let sql = `DELETE FROM departament WHERE id=${id}`;
+                    
+                    await connectDB.query(sql, (err) => {
+                        if (err) {
+                            res.status(500).send("Ошибка сервера");
+                            throw err;
+                        } else res.send("Отдел удален");
+                    });
+                }
+            );
 
 module.exports = router;

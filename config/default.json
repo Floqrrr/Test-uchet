@@ -2,5 +2,5 @@
     "host": "localhost",
     "user": "root",
     "password": "5500",
-    "database": "apteka"
+    "database": "store"
 }
