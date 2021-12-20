@@ -150,9 +150,13 @@ const AddCategory = ({ history }) => {
         SendTodoAddOrder(formData);
         createPdf(formData.name, formData.price, formData.count)
         //console.log(data.products.find((item) => item.name == history.location.pathname.toString().slice(7)).id);
-        history.push("/")
+        history.push("/main")
     }  
   }
+
+
+
+
 
 
   const {id, name, count, seller_id, product_id} = formData;

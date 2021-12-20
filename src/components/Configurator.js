@@ -33,7 +33,7 @@ const Configurator = ({ history }) => {
   const OnSubmit = (e) => {
     e.preventDefault();
     sendTodo(formData);
-    history.push("/")
+    history.push("/main")
     console.log(formData);
   };
 

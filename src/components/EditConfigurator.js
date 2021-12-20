@@ -26,7 +26,7 @@ const EditConfigurator = ({ history }) => {
   const Ondel = (e)=> {
     e.preventDefault();
     SendTodoDeleteProduct(history.location.pathname.toString().slice(-1))
-    history.push("/")
+    history.push("/main")
   }
 
   const OnSubmit = (e) => {

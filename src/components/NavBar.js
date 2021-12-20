@@ -41,7 +41,7 @@ const NavBar = () => {
     return(
     <>    
         <Navbar  bg="success" variant="dark">
-            <Navbar.Brand href="/">Главная</Navbar.Brand>
+            <Navbar.Brand href="/main">Главная</Navbar.Brand>
             <Nav className="mr-auto">
             <Nav.Link href="/addproduct">Добавить товар</Nav.Link>
             <Nav.Link href="/addcategory">Изменить категории</Nav.Link>

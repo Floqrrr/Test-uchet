@@ -9,6 +9,7 @@ import NavBar from "./components/NavBar"
 import Order from "./components/Order"
 import AddOrders from "./components/AddOrders"
 import EditConfigurator from "./components/EditConfigurator"
+import Login from "./components/Login"
 
 function App() {
 
@@ -17,8 +18,9 @@ function App() {
       <Router>
         <NavBar/>
         <section className="wrapper">
+          <Route exact path="/" component={Login} />
           <Switch>
-            <Route exact path="/" component={Main} />
+            <Route exact path="/main" component={Main} />
             <Route exact path="/order/:id" component={Order} />
             <Route exact path="/orders/" component={AddOrders} />
             <Route exact path="/addproduct" component={AddProduct} />
